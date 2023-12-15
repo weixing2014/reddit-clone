@@ -1,10 +1,10 @@
 import { Post, setAuthModalState } from '@/redux/appSlice';
-import { Image, Text, Flex, Icon, Spinner } from '@chakra-ui/react';
+import { Image, Text, Flex, Icon, Spinner, Input } from '@chakra-ui/react';
 import { Timestamp } from 'firebase/firestore';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { BiUpvote, BiDownvote, BiSolidDownvote } from 'react-icons/bi';
-import { FaRegCommentAlt } from 'react-icons/fa';
+import { FaReddit, FaRegCommentAlt } from 'react-icons/fa';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import * as reduxStore from '@/redux/appSlice';
@@ -13,6 +13,7 @@ import { BiSolidUpvote } from 'react-icons/bi';
 import { updateUserPostVotes } from '@/firebase/api';
 import { auth } from '@/firebase/clientApp';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import Comments from './Comments';
 
 type Props = {
   post: Post;
@@ -162,23 +163,8 @@ function Post({ post, isUserCreator, handleDeletePost }: Props) {
               </Flex>
             ))}
         </Flex>
-        <Flex direction='column'>
-          <Flex direction='row' pt={1} pb={1}>
-            <Flex pr={2}>
-              <Image boxSize='1.5rem' borderRadius='2px' src={post.imageURL} alt='avatar' />
-            </Flex>
-            <Flex color='gray.500' fontSize='10pt' flexGrow={1}>
-              This is my comment This is my comment This is my comment This is my comment
-            </Flex>
-          </Flex>
-          <Flex direction='row' pt={1} pb={1}>
-            <Flex pr={2}>
-              <Image boxSize='1.5rem' borderRadius='2px' src={post.imageURL} alt='avatar' />
-            </Flex>
-            <Flex color='gray.500' fontSize='10pt' flexGrow={1}>
-              This is my comment This is my comment This is my comment This is my comment
-            </Flex>
-          </Flex>
+        <Flex>
+          <Comments user={user} post={post} />
         </Flex>
       </Flex>
     </Flex>
