@@ -100,6 +100,13 @@ const postsSlice = createSlice({
     setUserVotedPosts: (state, action: PayloadAction<UserVotedPost[]>) => {
       state.userVotedPosts = action.payload;
     },
+    increaseNumberOfComments: (state, action: PayloadAction<{ postId: string; delta: number }>) => {
+      state.currentPosts = state.currentPosts.map((post) =>
+        post.id === action.payload.postId
+          ? { ...post, numberOfComments: post.numberOfComments + action.payload.delta }
+          : post
+      );
+    },
     updateUserPostVoteValue: (
       state,
       action: PayloadAction<{ postId: string; valueDelta: number }>
@@ -144,7 +151,12 @@ export const { setJoinedCommunities } = userSlice.actions;
 
 export const { setAuthModalState } = uiSlice.actions;
 
-export const { setCurrentPosts, setUserVotedPosts, updateUserPostVoteValue } = postsSlice.actions;
+export const {
+  setCurrentPosts,
+  setUserVotedPosts,
+  updateUserPostVoteValue,
+  increaseNumberOfComments,
+} = postsSlice.actions;
 
 export const { setCurrentCommunity } = communitiesSlice.actions;
 

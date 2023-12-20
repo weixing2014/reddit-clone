@@ -1,18 +1,16 @@
-import { Post, setAuthModalState } from '@/redux/appSlice';
-import { Image, Text, Flex, Icon, Spinner, Input } from '@chakra-ui/react';
-import { Timestamp } from 'firebase/firestore';
-import moment from 'moment';
-import React, { useState } from 'react';
-import { BiUpvote, BiDownvote, BiSolidDownvote } from 'react-icons/bi';
-import { FaReddit, FaRegCommentAlt } from 'react-icons/fa';
-import { RiDeleteBinLine } from 'react-icons/ri';
-import { useDispatch } from 'react-redux';
-import * as reduxStore from '@/redux/appSlice';
-import { useSelector } from 'react-redux';
-import { BiSolidUpvote } from 'react-icons/bi';
 import { updateUserPostVotes } from '@/firebase/api';
 import { auth } from '@/firebase/clientApp';
+import * as reduxStore from '@/redux/appSlice';
+import { Post, setAuthModalState } from '@/redux/appSlice';
+import { Flex, Icon, Image, Spinner, Text } from '@chakra-ui/react';
+import { Timestamp } from 'firebase/firestore';
+import moment from 'moment';
+import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { BiDownvote, BiSolidDownvote, BiSolidUpvote, BiUpvote } from 'react-icons/bi';
+import { FaRegCommentAlt } from 'react-icons/fa';
+import { RiDeleteBinLine } from 'react-icons/ri';
+import { useDispatch, useSelector } from 'react-redux';
 import Comments from './Comments';
 
 type Props = {
@@ -33,8 +31,6 @@ function Post({ post, isUserCreator, handleDeletePost }: Props) {
   const currentUserVoteValue = useSelector(
     reduxStore.selectVoteValueByUserIdAndPostId(user?.uid, post.id)
   );
-
-  // const currentUserVoteValue = userVotedPosts.find((p) => p.postId === post.id)?.value || 0;
 
   const getValueDelta = (action: VoteAction) => {
     if (!user) return;
@@ -107,7 +103,7 @@ function Post({ post, isUserCreator, handleDeletePost }: Props) {
           }}
         />
       </Flex>
-      <Flex direction='column' p={2}>
+      <Flex width='100%' direction='column' p={2}>
         <Flex>
           <Text color='gray.500' fontSize='10pt'>
             Posted by u/{post.creatorDisplayName}{' '}

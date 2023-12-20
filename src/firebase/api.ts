@@ -10,6 +10,7 @@ import {
 import { firestore, storage } from './clientApp';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { UserVotedPost } from '@/redux/appSlice';
+import { CommentData } from '@/components/Community/Comment';
 
 export const getUserCommunitySnippetDocRef = (userId: string, communityId: string) =>
   doc(firestore, 'users', userId, 'communitySnippets', communityId);
@@ -25,6 +26,15 @@ export const getPostDocRef = (postId: string) => doc(firestore, 'posts', postId)
 export const fetchCommunityById = async (communityId: string) => {
   try {
     const communityDoc = await getDoc(doc(firestore, 'communities', communityId));
+    return communityDoc.data();
+  } catch (e: any) {
+    throw e;
+  }
+};
+
+export const getUserById = async (uid: string) => {
+  try {
+    const communityDoc = await getDoc(doc(firestore, 'users', uid));
     return communityDoc.data();
   } catch (e: any) {
     throw e;
@@ -84,6 +94,20 @@ export const joinCommunity = async (userId: string, communityId: string) => {
 
       transaction.update(getCommunityDocRef(communityId), {
         numberOfMembers: increment(1),
+      });
+    });
+  } catch (e: any) {
+    throw e;
+  }
+};
+
+export const addComment = async (commentData: CommentData) => {
+  try {
+    await runTransaction(firestore, async (transaction) => {
+      transaction.set(doc(collection(firestore, 'comments')), commentData);
+
+      transaction.update(doc(firestore, 'posts', commentData.postId), {
+        numberOfComments: increment(1),
       });
     });
   } catch (e: any) {

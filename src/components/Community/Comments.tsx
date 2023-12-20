@@ -1,34 +1,17 @@
-import { firestore, storage } from '@/firebase/clientApp';
-import { Post } from '@/redux/appSlice';
-import { Flex, Input, Image, Button } from '@chakra-ui/react';
+import { addComment } from '@/firebase/api';
+import { firestore } from '@/firebase/clientApp';
+import { Post, increaseNumberOfComments } from '@/redux/appSlice';
+import { Button, Flex, Input } from '@chakra-ui/react';
 import { User } from 'firebase/auth';
-import {
-  Timestamp,
-  addDoc,
-  collection,
-  getDocs,
-  orderBy,
-  query,
-  serverTimestamp,
-  updateDoc,
-  where,
-} from 'firebase/firestore';
-import { ref, uploadString, getDownloadURL } from 'firebase/storage';
-import router from 'next/router';
-import React, { useEffect, useState } from 'react';
-
-export type Comment = {
-  id?: string;
-  creatorId: string;
-  creatorDisplayText: string;
-  postId: string;
-  text: string;
-  createdAt: Timestamp;
-};
+import { collection, getDocs, orderBy, query, serverTimestamp, where } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import Comment, { CommentData } from './Comment';
+import { useDispatch } from 'react-redux';
 
 function Comments({ user, post }: { user?: User | null; post: Post }) {
   const [commentText, setCommentText] = useState('');
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<CommentData[]>([]);
+  const dispatch = useDispatch();
 
   const fetchComments = async () => {
     const commentsQuery = query(
@@ -38,7 +21,10 @@ function Comments({ user, post }: { user?: User | null; post: Post }) {
     );
 
     const commentDocs = await getDocs(commentsQuery);
-    const comments = commentDocs.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Comment[];
+    const comments = commentDocs.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as CommentData[];
     setComments(comments);
   };
 
@@ -61,18 +47,19 @@ function Comments({ user, post }: { user?: User | null; post: Post }) {
           onClick={async () => {
             if (!user) return;
 
-            const newComment = {
+            const newComment: CommentData = {
               creatorId: user.uid,
               creatorDisplayText: user.displayName,
-              postId: post.id,
+              postId: post.id!,
               text: commentText,
               createdAt: serverTimestamp(),
             };
 
             try {
-              const postDocRef = await addDoc(collection(firestore, 'comments'), newComment);
+              const postDocRef = await addComment(newComment);
               setCommentText('');
               fetchComments();
+              dispatch(increaseNumberOfComments({ postId: post.id!, delta: 1 }));
             } catch (e) {
               console.log('Create new comment error :>> ', e);
             }
@@ -81,16 +68,11 @@ function Comments({ user, post }: { user?: User | null; post: Post }) {
           Send
         </Button>
       </Flex>
-      {comments.map((comment) => (
-        <Flex key={comment.id} direction='row' pt={1} pb={1}>
-          <Flex pr={2}>
-            <Image boxSize='1.5rem' borderRadius='2px' src={''} alt='avatar' />
-          </Flex>
-          <Flex color='gray.500' fontSize='10pt' flexGrow={1}>
-            {comment.text}
-          </Flex>
-        </Flex>
-      ))}
+      <Flex direction='column' mt={2}>
+        {comments.map((comment) => (
+          <Comment key={comment.id} comment={comment} />
+        ))}
+      </Flex>
     </Flex>
   );
 }
