@@ -1,7 +1,7 @@
+import { fetchCommunityByIdAsync, updateCommunityImageAsync } from '@/firebase/api/api';
 import * as reduxStore from '@/redux/appSlice';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import * as firebaseAPI from '../firebase/api';
 
 const useCurrentCommunity = (communityId?: string) => {
   const [loading, setLoading] = useState(false);
@@ -17,7 +17,7 @@ const useCurrentCommunity = (communityId?: string) => {
   const fetchCurrentCommunity = async (communityId: string) => {
     try {
       setLoading(true);
-      const community = await firebaseAPI.fetchCommunityById(communityId);
+      const community = await fetchCommunityByIdAsync(communityId);
       setCurrentCommunity(community as reduxStore.CommunityData);
       setLoading(false);
     } catch (e: any) {
@@ -33,7 +33,7 @@ const useCurrentCommunity = (communityId?: string) => {
     setLoading(true);
 
     try {
-      const imageURL = await firebaseAPI.updateCommunityImage(communityId, fileData);
+      const imageURL = await updateCommunityImageAsync(communityId, fileData);
 
       setCurrentCommunity({
         ...currentCommunity,

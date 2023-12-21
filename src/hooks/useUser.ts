@@ -1,4 +1,4 @@
-import { getUserById } from '@/firebase/api';
+import { fetchUserByIdAsync } from '@/firebase/api/api';
 import { useEffect, useState } from 'react';
 
 const useUser = (userId?: string) => {
@@ -14,7 +14,7 @@ const useUser = (userId?: string) => {
     setLoading(true);
 
     try {
-      const user = await getUserById(userId);
+      const user = await fetchUserByIdAsync(userId);
       setUser(user);
     } catch (e: any) {
       console.log('fetchUser error :>> ', e.message);

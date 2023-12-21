@@ -1,4 +1,4 @@
-import { getVotedPosts } from '@/firebase/api';
+import { fetchVotedPostsAsync } from '@/firebase/api/api';
 import { firestore, storage } from '@/firebase/clientApp';
 import * as reduxStore from '@/redux/appSlice';
 import { collection, deleteDoc, doc, getDocs, orderBy, query, where } from 'firebase/firestore';
@@ -24,7 +24,7 @@ const usePosts = (communityId: string, userId?: string) => {
     setLoading(true);
 
     try {
-      const userVotedPosts = await getVotedPosts(userId);
+      const userVotedPosts = await fetchVotedPostsAsync(userId);
 
       dispatch(reduxStore.setUserVotedPosts(userVotedPosts));
     } catch (e: any) {

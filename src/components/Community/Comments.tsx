@@ -1,9 +1,17 @@
-import { addComment } from '@/firebase/api';
+import { addComment } from '@/firebase/api/api';
 import { firestore } from '@/firebase/clientApp';
 import { Post, increaseNumberOfComments } from '@/redux/appSlice';
 import { Button, Flex, Input } from '@chakra-ui/react';
 import { User } from 'firebase/auth';
-import { collection, getDocs, orderBy, query, serverTimestamp, where } from 'firebase/firestore';
+import {
+  Timestamp,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  where,
+} from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import Comment, { CommentData } from './Comment';
 import { useDispatch } from 'react-redux';
@@ -52,13 +60,20 @@ function Comments({ user, post }: { user?: User | null; post: Post }) {
               creatorDisplayText: user.displayName,
               postId: post.id!,
               text: commentText,
-              createdAt: serverTimestamp(),
+              createdAt: serverTimestamp() as Timestamp,
             };
 
             try {
-              const postDocRef = await addComment(newComment);
+              const commentId = await addComment(newComment);
               setCommentText('');
-              fetchComments();
+              setComments([
+                {
+                  id: commentId,
+                  ...newComment,
+                  createdAt: { seconds: Date.now() / 1000 } as Timestamp,
+                },
+                ...comments,
+              ]);
               dispatch(increaseNumberOfComments({ postId: post.id!, delta: 1 }));
             } catch (e) {
               console.log('Create new comment error :>> ', e);

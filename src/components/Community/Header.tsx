@@ -1,10 +1,8 @@
 import { auth } from '@/firebase/clientApp';
-import { isCommunityMember, joinCommunity, leaveCommunity } from '@/firebase/api';
-import { Box, Button, ButtonProps, Flex, Image, Text } from '@chakra-ui/react';
-import { useCallback, useEffect, useState } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import useCommunityData from '@/hooks/useCommunityData';
 import { CommunityData } from '@/redux/appSlice';
+import { Box, Button, ButtonProps, Flex, Image, Text } from '@chakra-ui/react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 const CommunityButton = ({ children, ...props }: ButtonProps) => (
   <Button width='80%' height='50%' {...props}>

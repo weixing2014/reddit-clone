@@ -1,4 +1,4 @@
-import { updateUserPostVotes } from '@/firebase/api';
+import { updateUserVotedPostAsync } from '@/firebase/api/api';
 import { auth } from '@/firebase/clientApp';
 import * as reduxStore from '@/redux/appSlice';
 import { Post, setAuthModalState } from '@/redux/appSlice';
@@ -12,6 +12,7 @@ import { FaRegCommentAlt } from 'react-icons/fa';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import Comments from './Comments';
+import { convertTimestampToFromNowText } from '@/utils/timestamp';
 
 type Props = {
   post: Post;
@@ -62,7 +63,7 @@ function Post({ post, isUserCreator, handleDeletePost }: Props) {
     const valueDelta = getValueDelta(action)!;
 
     try {
-      await updateUserPostVotes(user.uid, post.id!, valueDelta);
+      await updateUserVotedPostAsync(user.uid, post.id!, valueDelta);
     } catch (e) {
       console.log('e :>> ', e);
     }
@@ -106,8 +107,7 @@ function Post({ post, isUserCreator, handleDeletePost }: Props) {
       <Flex width='100%' direction='column' p={2}>
         <Flex>
           <Text color='gray.500' fontSize='10pt'>
-            Posted by u/{post.creatorDisplayName}{' '}
-            {currentMoment.diff(moment((post.createdAt as Timestamp).toDate()), 'hours')} hours ago
+            Posted by u/{post.creatorDisplayName} {convertTimestampToFromNowText(post.createdAt)}
           </Text>
         </Flex>
         <Flex pt={1}>

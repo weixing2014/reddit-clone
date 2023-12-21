@@ -29,7 +29,7 @@ export type Post = {
   body: string;
   numberOfComments: number;
   voteStatus: number;
-  createdAt: Timestamp | FieldValue;
+  createdAt: Timestamp;
   imageURL?: string;
 };
 

@@ -1,9 +1,13 @@
 import { auth } from '@/firebase/clientApp';
 import { useState, useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import * as firebaseAPI from '../firebase/api';
 import { useDispatch, useSelector } from 'react-redux';
 import * as reduxStore from '@/redux/appSlice';
+import {
+  fetchJoinedCommunitiesAsync,
+  joinCommunityAsync,
+  leaveCommunityAsync,
+} from '../firebase/api/api';
 
 const useCommunityData = (communityId?: string) => {
   const [loading, setLoading] = useState(false);
@@ -23,7 +27,7 @@ const useCommunityData = (communityId?: string) => {
 
     try {
       setLoading(true);
-      joinedCommunities = await firebaseAPI.getJoinedCommunities(user?.uid);
+      joinedCommunities = await fetchJoinedCommunitiesAsync(user?.uid);
     } catch (e: any) {
       setError(e);
     }
@@ -38,7 +42,7 @@ const useCommunityData = (communityId?: string) => {
     setLoading(true);
 
     try {
-      await firebaseAPI.joinCommunity(user?.uid, communityId);
+      await joinCommunityAsync(user?.uid, communityId);
     } catch (e: any) {
       setError(e);
       return;
@@ -56,7 +60,7 @@ const useCommunityData = (communityId?: string) => {
     setLoading(true);
 
     try {
-      await firebaseAPI.leaveCommunity(user?.uid, communityId);
+      await leaveCommunityAsync(user?.uid, communityId);
     } catch (e: any) {
       setError(e);
     }
