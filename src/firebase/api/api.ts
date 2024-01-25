@@ -4,14 +4,16 @@ import {
   getDoc,
   getDocs,
   increment,
+  limit,
+  orderBy,
+  query,
   runTransaction,
   updateDoc,
 } from 'firebase/firestore';
 import { firestore, storage } from '../clientApp';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
-import { UserVotedPost } from '@/redux/appSlice';
+import { CommunityData, UserVotedPost } from '@/redux/appSlice';
 import { CommentData } from '@/components/Community/Comment';
-
 
 export const getUserCommunitySnippetDocRef = (userId: string, communityId: string) =>
   doc(firestore, 'users', userId, 'communitySnippets', communityId);
@@ -51,6 +53,27 @@ export const fetchJoinedCommunitiesAsync = async (userId: string) => {
   return (await getDocs(collection(firestore, `users/${userId}/communitySnippets`))).docs.map(
     (doc) => ({ ...doc.data() })
   );
+};
+
+export const fetchTopCommunitiesAsync = async (topNum: number = 1) => {
+  const communitiesCollection = collection(firestore, 'communities');
+
+  const topCommunitiesQuery = query(
+    communitiesCollection,
+    orderBy('numberOfMembers', 'desc'), // Order by numberOfMembers in descending order
+    limit(topNum) // Limit the result to the top 5 communities
+  );
+
+  const querySnapshot = await getDocs(topCommunitiesQuery);
+
+  const topCommunities = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as CommunityData[];
+
+  console.log(topCommunities);
+
+  return topCommunities;
 };
 
 export const fetchVotedPostsAsync: (userId: string) => Promise<UserVotedPost[]> = async (
