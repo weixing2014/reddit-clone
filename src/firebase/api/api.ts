@@ -1,4 +1,5 @@
 import {
+  OrderByDirection,
   collection,
   doc,
   getDoc,
@@ -12,7 +13,7 @@ import {
 } from 'firebase/firestore';
 import { firestore, storage } from '../clientApp';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
-import { CommunityData, UserVotedPost } from '@/redux/appSlice';
+import { CommunityData, Post, UserVotedPost } from '@/redux/appSlice';
 import { CommentData } from '@/components/Community/Comment';
 
 export const getUserCommunitySnippetDocRef = (userId: string, communityId: string) =>
@@ -55,25 +56,39 @@ export const fetchJoinedCommunitiesAsync = async (userId: string) => {
   );
 };
 
-export const fetchTopCommunitiesAsync = async (topNum: number = 1) => {
-  const communitiesCollection = collection(firestore, 'communities');
+export const fetchTopResultsAsync = async (
+  collectionName: string,
+  field: string,
+  sortOrder: 'asc' | 'desc',
+  topNum: number
+) => {
+  const collectionData = collection(firestore, collectionName);
 
-  const topCommunitiesQuery = query(
-    communitiesCollection,
-    orderBy('numberOfMembers', 'desc'), // Order by numberOfMembers in descending order
-    limit(topNum) // Limit the result to the top 5 communities
-  );
+  const topResultsQuery = query(collectionData, orderBy(field, sortOrder), limit(topNum));
 
-  const querySnapshot = await getDocs(topCommunitiesQuery);
+  const querySnapshot = await getDocs(topResultsQuery);
 
-  const topCommunities = querySnapshot.docs.map((doc) => ({
+  const topResults = querySnapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
-  })) as CommunityData[];
+  }));
 
-  console.log(topCommunities);
+  console.log(topResults);
 
-  return topCommunities;
+  return topResults;
+};
+
+export const fetchTopCommunitiesAsync = async (topNum: number = 1) => {
+  return (await fetchTopResultsAsync(
+    'communities',
+    'numberOfMembers',
+    'desc',
+    5
+  )) as CommunityData[];
+};
+
+export const fetchTopPostsAsync = async (topNum: number = 1) => {
+  return (await fetchTopResultsAsync('posts', 'voteStatus', 'desc', 5)) as Post[];
 };
 
 export const fetchVotedPostsAsync: (userId: string) => Promise<UserVotedPost[]> = async (

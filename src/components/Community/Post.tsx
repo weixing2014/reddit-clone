@@ -16,15 +16,14 @@ import { convertTimestampToFromNowText } from '@/utils/timestamp';
 
 type Props = {
   post: Post;
-  isUserCreator: boolean;
-  handleDeletePost: (post: Post) => void;
+  handleDeletePost?: (post: Post) => void;
 };
 
 export type VoteAction = 'UP' | 'DOWN';
 
 const currentMoment = moment();
 
-function Post({ post, isUserCreator, handleDeletePost }: Props) {
+function Post({ post, handleDeletePost }: Props) {
   const [user] = useAuthState(auth);
   const [deletePostLoading, setDeletePostLoading] = useState(false);
   const dispatch = useDispatch();
@@ -133,7 +132,9 @@ function Post({ post, isUserCreator, handleDeletePost }: Props) {
             <Icon fontSize='12pt' mr={1} as={FaRegCommentAlt} mt='2px' />
             {post.numberOfComments} Comments
           </Flex>
-          {isUserCreator &&
+          {user?.uid &&
+            handleDeletePost &&
+            post.creatorId === user?.uid &&
             (deletePostLoading ? (
               <Flex ml={2}>
                 <Spinner size='xs' ml={2} mr={2} mt={1} />

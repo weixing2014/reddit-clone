@@ -27,7 +27,7 @@ function TopCommunities() {
 
   return (
     <>
-      <Flex direction='column' bgColor='white' borderRadius={4} mt={4}>
+      <Flex direction='column' bgColor='white' borderRadius={4}>
         <Flex
           borderTopLeftRadius={4}
           borderTopRightRadius={4}

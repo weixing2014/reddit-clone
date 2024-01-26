@@ -16,14 +16,7 @@ function Posts({ communityData }: { communityData: CommunityData }) {
           <Spinner size='xl' />
         </Stack>
       ) : (
-        currentPosts.map((post) => (
-          <Post
-            key={post.id}
-            post={post}
-            isUserCreator={user?.uid === communityData.creatorId}
-            handleDeletePost={deletePost}
-          />
-        ))
+        currentPosts.map((post) => <Post key={post.id} post={post} handleDeletePost={deletePost} />)
       )}
     </>
   );

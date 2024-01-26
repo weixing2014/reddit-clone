@@ -42,47 +42,50 @@ function Comments({ user, post }: { user?: User | null; post: Post }) {
 
   return (
     <Flex direction='column' width='100%'>
-      <Flex bgColor='white' pt={2} justify='center' borderColor='gray.300'>
-        <Input
-          placeholder='Add your comment'
-          flexGrow={1}
-          value={commentText}
-          onChange={(e) => {
-            setCommentText(e.target.value);
-          }}
-        />
-        <Button
-          onClick={async () => {
-            if (!user) return;
+      {user && (
+        <Flex bgColor='white' pt={2} justify='center' borderColor='gray.300'>
+          <Input
+            placeholder='Add your comment'
+            flexGrow={1}
+            value={commentText}
+            onChange={(e) => {
+              setCommentText(e.target.value);
+            }}
+          />
+          <Button
+            ml={1}
+            onClick={async () => {
+              if (!user) return;
 
-            const newComment: CommentData = {
-              creatorId: user.uid,
-              creatorDisplayText: user.displayName,
-              postId: post.id!,
-              text: commentText,
-              createdAt: serverTimestamp() as Timestamp,
-            };
+              const newComment: CommentData = {
+                creatorId: user.uid,
+                creatorDisplayText: user.displayName,
+                postId: post.id!,
+                text: commentText,
+                createdAt: serverTimestamp() as Timestamp,
+              };
 
-            try {
-              const commentId = await addComment(newComment);
-              setCommentText('');
-              setComments([
-                {
-                  id: commentId,
-                  ...newComment,
-                  createdAt: { seconds: Date.now() / 1000 } as Timestamp,
-                },
-                ...comments,
-              ]);
-              dispatch(increaseNumberOfComments({ postId: post.id!, delta: 1 }));
-            } catch (e) {
-              console.log('Create new comment error :>> ', e);
-            }
-          }}
-        >
-          Send
-        </Button>
-      </Flex>
+              try {
+                const commentId = await addComment(newComment);
+                setCommentText('');
+                setComments([
+                  {
+                    id: commentId,
+                    ...newComment,
+                    createdAt: { seconds: Date.now() / 1000 } as Timestamp,
+                  },
+                  ...comments,
+                ]);
+                dispatch(increaseNumberOfComments({ postId: post.id!, delta: 1 }));
+              } catch (e) {
+                console.log('Create new comment error :>> ', e);
+              }
+            }}
+          >
+            Send
+          </Button>
+        </Flex>
+      )}
       <Flex direction='column' mt={2}>
         {comments.map((comment) => (
           <Comment key={comment.id} comment={comment} />
