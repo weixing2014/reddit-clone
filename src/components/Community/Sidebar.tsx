@@ -22,7 +22,7 @@ function Sidebar() {
 
   return (
     <>
-      {user?.uid && (
+      {communityId && (
         <Flex direction='column' bgColor='white' borderRadius={4} mb={4}>
           <Flex
             borderTopLeftRadius={4}
