@@ -3,12 +3,7 @@ import PageContent from '@/components/Layout/PageContent';
 import { auth, firestore, storage } from '@/firebase/clientApp';
 import { Post } from '@/redux/appSlice';
 import { Button, Flex, Input, Textarea } from '@chakra-ui/react';
-import {
-  addDoc,
-  collection,
-  serverTimestamp,
-  updateDoc
-} from 'firebase/firestore';
+import { Timestamp, addDoc, collection, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadString } from 'firebase/storage';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -74,7 +69,7 @@ function Submit() {
                 body: content.body,
                 numberOfComments: 0,
                 voteStatus: 0,
-                createdAt: serverTimestamp(),
+                createdAt: serverTimestamp() as Timestamp,
               };
 
               setLoading(true);
