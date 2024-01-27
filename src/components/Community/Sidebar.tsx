@@ -8,7 +8,6 @@ import { useRouter } from 'next/router';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import FileUploadWrapper from '../Shared/FileUploadWrapper';
 import useCurrentCommunity from '@/hooks/useCurrentCommunity';
-import { updateCommunityImageAsync } from '@/firebase/api/api';
 import { useState } from 'react';
 import TopCommunities from './TopCommunities';
 
@@ -16,7 +15,7 @@ function Sidebar() {
   const router = useRouter();
   const [user] = useAuthState(auth);
   const { communityId } = router.query;
-  const { currentCommunity, updateCommunityImageAsync, loading } = useCurrentCommunity(
+  const { currentCommunity, updateCommunityImage, loading } = useCurrentCommunity(
     communityId as string
   );
 
@@ -79,7 +78,7 @@ function Sidebar() {
                 <Flex color='blue.500' _hover={{ cursor: 'pointer' }}>
                   <FileUploadWrapper
                     onFileSelected={async (fileData) => {
-                      await updateCommunityImageAsync(communityId as string, fileData as string);
+                      await updateCommunityImage(communityId as string, fileData as string);
                     }}
                   >
                     {({ openFileSelector }) =>
